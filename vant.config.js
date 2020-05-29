@@ -127,6 +127,10 @@ module.exports = {
                 title: 'Field 输入框',
               },
               {
+                path: 'form',
+                title: 'Form 表单',
+              },
+              {
                 path: 'number-keyboard',
                 title: 'NumberKeyboard 数字键盘',
               },
@@ -173,7 +177,7 @@ module.exports = {
             items: [
               {
                 path: 'action-sheet',
-                title: 'ActionSheet 上拉菜单',
+                title: 'ActionSheet 动作面板',
               },
               {
                 path: 'dialog',
@@ -198,6 +202,10 @@ module.exports = {
               {
                 path: 'pull-refresh',
                 title: 'PullRefresh 下拉刷新',
+              },
+              {
+                path: 'share-sheet',
+                title: 'ShareSheet 分享面板',
               },
               {
                 path: 'swipe-cell',
@@ -229,12 +237,16 @@ module.exports = {
                 title: 'Divider 分割线',
               },
               {
+                path: 'empty',
+                title: 'Empty 空状态',
+              },
+              {
                 path: 'image-preview',
                 title: 'ImagePreview 图片预览',
               },
               {
                 path: 'lazyload',
-                title: 'Lazyload 图片懒加载',
+                title: 'Lazyload 懒加载',
               },
               {
                 path: 'list',
@@ -243,10 +255,6 @@ module.exports = {
               {
                 path: 'notice-bar',
                 title: 'NoticeBar 通知栏',
-              },
-              {
-                path: 'panel',
-                title: 'Panel 面板',
               },
               {
                 path: 'progress',
@@ -356,6 +364,10 @@ module.exports = {
             title: '废弃',
             items: [
               {
+                path: 'panel',
+                title: 'Panel 面板',
+              },
+              {
                 path: 'switch-cell',
                 title: 'SwitchCell 开关单元格',
               },
@@ -462,6 +474,10 @@ module.exports = {
                 title: 'Field',
               },
               {
+                path: 'form',
+                title: 'Form',
+              },
+              {
                 path: 'number-keyboard',
                 title: 'NumberKeyboard',
               },
@@ -539,6 +555,10 @@ module.exports = {
                 title: 'PullRefresh',
               },
               {
+                path: 'share-sheet',
+                title: 'ShareSheet',
+              },
+              {
                 path: 'swipe-cell',
                 title: 'SwipeCell',
               },
@@ -568,6 +588,10 @@ module.exports = {
                 title: 'Divider',
               },
               {
+                path: 'empty',
+                title: 'Empty',
+              },
+              {
                 path: 'image-preview',
                 title: 'ImagePreview',
               },
@@ -582,10 +606,6 @@ module.exports = {
               {
                 path: 'notice-bar',
                 title: 'NoticeBar',
-              },
-              {
-                path: 'panel',
-                title: 'Panel',
               },
               {
                 path: 'progress',
@@ -694,6 +714,10 @@ module.exports = {
           {
             title: 'Deprecated',
             items: [
+              {
+                path: 'panel',
+                title: 'Panel',
+              },
               {
                 path: 'switch-cell',
                 title: 'SwitchCell',

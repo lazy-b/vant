@@ -19,21 +19,21 @@ export function getScroller(el: HTMLElement, root: ScrollElement = window) {
   ) {
     const { overflowY } = window.getComputedStyle(node);
 
-    if (overflowScrollReg.test(<string>overflowY)) {
+    if (overflowScrollReg.test(overflowY)) {
       if (node.tagName !== 'BODY') {
         return node;
       }
 
       // see: https://github.com/youzan/vant/issues/3823
       const { overflowY: htmlOverflowY } = window.getComputedStyle(
-        <Element>node.parentNode
+        node.parentNode as Element
       );
 
-      if (overflowScrollReg.test(<string>htmlOverflowY)) {
+      if (overflowScrollReg.test(htmlOverflowY)) {
         return node;
       }
     }
-    node = <HTMLElement>node.parentNode;
+    node = node.parentNode as HTMLElement;
   }
 
   return root;
@@ -65,12 +65,14 @@ export function setRootScrollTop(value: number) {
   setScrollTop(document.body, value);
 }
 
-// get distance from element top to page top
-export function getElementTop(el: ScrollElement) {
+// get distance from element top to page top or scroller top
+export function getElementTop(el: ScrollElement, scroller?: HTMLElement) {
   if (isWindow(el)) {
     return 0;
   }
-  return el.getBoundingClientRect().top + getRootScrollTop();
+
+  const scrollTop = scroller ? getScrollTop(scroller) : getRootScrollTop();
+  return el.getBoundingClientRect().top + scrollTop;
 }
 
 export function getVisibleHeight(el: ScrollElement) {

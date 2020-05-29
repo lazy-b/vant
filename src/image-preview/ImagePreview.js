@@ -8,12 +8,14 @@ import { PopupMixin } from '../mixins/popup';
 import { TouchMixin } from '../mixins/touch';
 
 // Components
+import Icon from '../icon';
 import Image from '../image';
 import Swipe from '../swipe';
 import Loading from '../loading';
 import SwipeItem from '../swipe-item';
 
 const [createComponent, bem] = createNamespace('image-preview');
+const DOUBLE_CLICK_INTERVAL = 250;
 
 function getDistance(touches) {
   return Math.sqrt(
@@ -32,7 +34,6 @@ export default createComponent({
 
   props: {
     className: null,
-    lazyLoad: Boolean,
     asyncClose: Boolean,
     showIndicators: Boolean,
     images: {
@@ -71,6 +72,15 @@ export default createComponent({
       type: String,
       default: bem('overlay'),
     },
+    closeable: Boolean,
+    closeIcon: {
+      type: String,
+      default: 'clear',
+    },
+    closeIconPosition: {
+      type: String,
+      default: 'top-right',
+    },
   },
 
   data() {
@@ -93,8 +103,9 @@ export default createComponent({
       };
 
       if (scale !== 1) {
-        style.transform = `scale3d(${scale}, ${scale}, 1) translate(${this
-          .moveX / scale}px, ${this.moveY / scale}px)`;
+        style.transform = `scale3d(${scale}, ${scale}, 1) translate(${
+          this.moveX / scale
+        }px, ${this.moveY / scale}px)`;
       }
 
       return style;
@@ -102,6 +113,8 @@ export default createComponent({
   },
 
   watch: {
+    startPosition: 'setActive',
+
     value(val) {
       if (val) {
         this.setActive(+this.startPosition);
@@ -114,10 +127,6 @@ export default createComponent({
           url: this.images[this.active],
         });
       }
-    },
-
-    startPosition(val) {
-      this.setActive(val);
     },
 
     shouldRender: {
@@ -137,6 +146,12 @@ export default createComponent({
   },
 
   methods: {
+    emitClose() {
+      if (!this.asyncClose) {
+        this.$emit('input', false);
+      }
+    },
+
     onWrapperTouchStart() {
       this.touchStartTime = new Date();
     },
@@ -148,15 +163,13 @@ export default createComponent({
       const { offsetX = 0, offsetY = 0 } = this.$refs.swipe || {};
 
       // prevent long tap to close component
-      if (deltaTime < 300 && offsetX < 10 && offsetY < 10) {
+      if (deltaTime < DOUBLE_CLICK_INTERVAL && offsetX < 10 && offsetY < 10) {
         if (!this.doubleClickTimer) {
           this.doubleClickTimer = setTimeout(() => {
-            if (!this.asyncClose) {
-              this.$emit('input', false);
-            }
+            this.emitClose();
 
             this.doubleClickTimer = null;
-          }, 300);
+          }, DOUBLE_CLICK_INTERVAL);
         } else {
           clearTimeout(this.doubleClickTimer);
           this.doubleClickTimer = null;
@@ -260,7 +273,10 @@ export default createComponent({
     },
 
     setScale(scale) {
-      this.scale = range(scale, +this.minZoom, +this.maxZoom);
+      const value = range(scale, +this.minZoom, +this.maxZoom);
+
+      this.scale = value;
+      this.$emit('scale', { index: this.active, scale: value });
     },
 
     resetScale() {
@@ -304,6 +320,7 @@ export default createComponent({
       return (
         <Swipe
           ref="swipe"
+          lazyRender
           loop={this.loop}
           class={bem('swipe')}
           indicatorColor="white"
@@ -318,7 +335,6 @@ export default createComponent({
                 src={image}
                 fit="contain"
                 class={bem('image')}
-                lazyLoad={this.lazyLoad}
                 scopedSlots={imageSlots}
                 style={index === this.active ? this.imageStyle : null}
                 nativeOnTouchstart={this.onImageTouchStart}
@@ -331,6 +347,23 @@ export default createComponent({
         </Swipe>
       );
     },
+
+    genClose() {
+      if (this.closeable) {
+        return (
+          <Icon
+            role="button"
+            name={this.closeIcon}
+            class={bem('close-icon', this.closeIconPosition)}
+            onClick={this.emitClose}
+          />
+        );
+      }
+    },
+
+    onClosed() {
+      this.$emit('closed');
+    },
   },
 
   render() {
@@ -339,8 +372,9 @@ export default createComponent({
     }
 
     return (
-      <transition name="van-fade">
+      <transition name="van-fade" onAfterLeave={this.onClosed}>
         <div vShow={this.value} class={[bem(), this.className]}>
+          {this.genClose()}
           {this.genImages()}
           {this.genIndex()}
           {this.genCover()}

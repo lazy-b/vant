@@ -1,7 +1,6 @@
 // Utils
 import { createNamespace } from '../utils';
 import { emit, inherit } from '../utils/functional';
-import { BORDER_TOP } from '../utils/constant';
 
 // Mixins
 import { popupMixinProps } from '../mixins/popup';
@@ -34,6 +33,7 @@ export type ActionSheetProps = PopupMixinProps & {
   closeIcon: string;
   cancelText?: string;
   description?: string;
+  closeOnPopstate?: boolean;
   closeOnClickAction?: boolean;
   safeAreaInsetBottom?: boolean;
 };
@@ -109,7 +109,7 @@ function ActionSheet(
     return (
       <button
         type="button"
-        class={[bem('item', { disabled, loading }), item.className, BORDER_TOP]}
+        class={[bem('item', { disabled, loading }), item.className]}
         style={{ color: item.color }}
         onClick={onClickOption}
       >
@@ -120,11 +120,12 @@ function ActionSheet(
 
   function CancelText() {
     if (cancelText) {
-      return (
+      return [
+        <div class={bem('gap')} />,
         <button type="button" class={bem('cancel')} onClick={onCancel}>
           {cancelText}
-        </button>
-      );
+        </button>,
+      ];
     }
   }
 
@@ -143,6 +144,7 @@ function ActionSheet(
       lazyRender={props.lazyRender}
       lockScroll={props.lockScroll}
       getContainer={props.getContainer}
+      closeOnPopstate={props.closeOnPopstate}
       closeOnClickOverlay={props.closeOnClickOverlay}
       safeAreaInsetBottom={props.safeAreaInsetBottom}
       {...inherit(ctx, true)}
@@ -164,6 +166,7 @@ ActionSheet.props = {
   cancelText: String,
   description: String,
   getContainer: [String, Function],
+  closeOnPopstate: Boolean,
   closeOnClickAction: Boolean,
   round: {
     type: Boolean,

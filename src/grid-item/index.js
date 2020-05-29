@@ -1,5 +1,5 @@
 // Utils
-import { createNamespace, addUnit } from '../utils';
+import { createNamespace, addUnit, isDef } from '../utils';
 import { BORDER } from '../utils/constant';
 import { route, routeProps } from '../utils/router';
 
@@ -20,7 +20,9 @@ export default createComponent({
     dot: Boolean,
     text: String,
     icon: String,
+    iconPrefix: String,
     info: [Number, String],
+    badge: [Number, String],
   },
 
   computed: {
@@ -69,12 +71,13 @@ export default createComponent({
 
     genIcon() {
       const iconSlot = this.slots('icon');
+      const info = isDef(this.badge) ? this.badge : this.info;
 
       if (iconSlot) {
         return (
           <div class={bem('icon-wrapper')}>
             {iconSlot}
-            <Info dot={this.dot} info={this.info} />
+            <Info dot={this.dot} info={info} />
           </div>
         );
       }
@@ -84,9 +87,10 @@ export default createComponent({
           <Icon
             name={this.icon}
             dot={this.dot}
-            info={this.info}
+            info={info}
             size={this.parent.iconSize}
             class={bem('icon')}
+            classPrefix={this.iconPrefix}
           />
         );
       }
@@ -116,7 +120,14 @@ export default createComponent({
   },
 
   render() {
-    const { center, border, square, gutter, clickable } = this.parent;
+    const {
+      center,
+      border,
+      square,
+      gutter,
+      direction,
+      clickable,
+    } = this.parent;
 
     return (
       <div class={[bem({ square })]} style={this.style}>
@@ -125,12 +136,15 @@ export default createComponent({
           role={clickable ? 'button' : null}
           tabindex={clickable ? 0 : null}
           class={[
-            bem('content', {
-              center,
-              square,
-              clickable,
-              surround: border && gutter,
-            }),
+            bem('content', [
+              direction,
+              {
+                center,
+                square,
+                clickable,
+                surround: border && gutter,
+              },
+            ]),
             { [BORDER]: border },
           ]}
           onClick={this.onClick}

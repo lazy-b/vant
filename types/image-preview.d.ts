@@ -1,3 +1,4 @@
+import { VanComponent } from './component';
 import { VanPopupMixin } from './mixins/popup';
 
 export type ImagePreviewOptions =
@@ -8,13 +9,15 @@ export type ImagePreviewOptions =
       maxZoom?: number;
       minZoom?: number;
       className?: any;
-      lazyLoad?: boolean;
       showIndex?: boolean;
+      closeable?: boolean;
+      closeIcon?: string;
       asyncClose?: boolean;
       swipeDuration?: number;
       startPosition?: number;
       showIndicators?: boolean;
       closeOnPopstate?: boolean;
+      closeIconPosition?: string;
       onClose?: () => void;
       onChange?: (index: number) => void;
     };
@@ -30,6 +33,7 @@ export class VanImagePreview extends VanPopupMixin {
 export interface ImagePreview {
   (options: ImagePreviewOptions, startPosition?: number): VanImagePreview;
   install(): void;
+  Component: typeof VanComponent;
 }
 
 export const ImagePreview: ImagePreview;

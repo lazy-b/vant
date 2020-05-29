@@ -2,11 +2,12 @@
  * Common part of Checkbox & Radio
  */
 import Icon from '../icon';
+import { FieldMixin } from './field';
 import { ChildrenMixin } from './relation';
 import { addUnit } from '../utils';
 
 export const CheckboxMixin = ({ parent, bem, role }) => ({
-  mixins: [ChildrenMixin(parent)],
+  mixins: [ChildrenMixin(parent), FieldMixin],
 
   props: {
     name: null,
@@ -33,6 +34,10 @@ export const CheckboxMixin = ({ parent, bem, role }) => ({
 
     isDisabled() {
       return (this.parent && this.parent.disabled) || this.disabled;
+    },
+
+    direction() {
+      return (this.parent && this.parent.direction) || null;
     },
 
     iconStyle() {
@@ -64,9 +69,15 @@ export const CheckboxMixin = ({ parent, bem, role }) => ({
 
       if (!this.isDisabled && (iconClicked || !this.labelDisabled)) {
         this.toggle();
-      }
 
-      this.$emit('click', event);
+        // wait for toggle method to complete
+        // so we can get the changed value in the click event listener
+        setTimeout(() => {
+          this.$emit('click', event);
+        });
+      } else {
+        this.$emit('click', event);
+      }
     },
 
     genIcon() {
@@ -119,10 +130,13 @@ export const CheckboxMixin = ({ parent, bem, role }) => ({
     return (
       <div
         role={role}
-        class={bem({
-          disabled: this.isDisabled,
-          'label-disabled': this.labelDisabled,
-        })}
+        class={bem([
+          {
+            disabled: this.isDisabled,
+            'label-disabled': this.labelDisabled,
+          },
+          this.direction,
+        ])}
         tabindex={this.tabindex}
         aria-checked={String(this.checked)}
         onClick={this.onClick}

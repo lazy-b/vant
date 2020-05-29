@@ -1,5 +1,5 @@
 import Area from '..';
-import areaList from '../demo/area.simple';
+import areaList from '../demo/area-simple';
 import { mount, later, triggerDrag } from '../../../test';
 
 const firstOption = [
@@ -70,17 +70,11 @@ test('change option', () => {
   expect(wrapper).toMatchSnapshot();
 
   triggerDrag(columns.at(0), 0, -100);
-  columns
-    .at(0)
-    .find('ul')
-    .trigger('transitionend');
+  columns.at(0).find('ul').trigger('transitionend');
   expect(wrapper).toMatchSnapshot();
 
   triggerDrag(columns.at(2), 0, -100);
-  columns
-    .at(2)
-    .find('ul')
-    .trigger('transitionend');
+  columns.at(2).find('ul').trigger('transitionend');
   expect(wrapper).toMatchSnapshot();
 
   expect(onChange.mock.calls[0][1]).toEqual(secondOption);
@@ -123,6 +117,29 @@ test('columns-num prop', async () => {
 
   wrapper.setProps({
     columnsNum: 2,
+  });
+
+  await later();
+  expect(wrapper).toMatchSnapshot();
+});
+
+test('title slot', async () => {
+  const wrapper = mount(Area, {
+    scopedSlots: {
+      title: () => 'Custom Title',
+    },
+  });
+
+  await later();
+  expect(wrapper).toMatchSnapshot();
+});
+
+test('columns-top、columns-bottom slot', async () => {
+  const wrapper = mount(Area, {
+    slots: {
+      'columns-top': 'Top',
+      'columns-bottom': 'Bottom',
+    },
   });
 
   await later();

@@ -13,13 +13,15 @@ const defaultConfig = {
   className: '',
   onClose: null,
   onChange: null,
-  lazyLoad: false,
   showIndex: true,
+  closeable: false,
+  closeIcon: 'clear',
   asyncClose: false,
   startPosition: 0,
   swipeDuration: 500,
   showIndicators: false,
   closeOnPopstate: false,
+  closeIconPosition: 'top-right',
 };
 
 const initInstance = () => {
@@ -28,9 +30,15 @@ const initInstance = () => {
   });
   document.body.appendChild(instance.$el);
 
-  instance.$on('change', index => {
+  instance.$on('change', (index) => {
     if (instance.onChange) {
       instance.onChange(index);
+    }
+  });
+
+  instance.$on('scale', (data) => {
+    if (instance.onScale) {
+      instance.onScale(data);
     }
   });
 };
@@ -49,8 +57,12 @@ const ImagePreview = (images, startPosition = 0) => {
 
   Object.assign(instance, defaultConfig, options);
 
-  instance.$once('input', show => {
+  instance.$once('input', (show) => {
     instance.value = show;
+  });
+
+  instance.$once('closed', () => {
+    instance.images = [];
   });
 
   if (options.onClose) {
@@ -60,6 +72,8 @@ const ImagePreview = (images, startPosition = 0) => {
 
   return instance;
 };
+
+ImagePreview.Component = VueImagePreview;
 
 ImagePreview.install = () => {
   Vue.use(VueImagePreview);

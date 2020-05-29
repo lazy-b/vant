@@ -115,17 +115,17 @@ test('filter value during user input', () => {
   const input = wrapper.find('.van-stepper__input');
   input.element.value = '';
   input.trigger('input');
-  expect(wrapper.emitted('input')).toBeFalsy();
+  expect(wrapper.emitted('input')[0][0]).toEqual('');
 
   input.element.value = 'a';
   input.trigger('input');
   expect(input.element.value).toEqual('');
-  expect(wrapper.emitted('input')).toBeFalsy();
+  expect(wrapper.emitted('input')[1]).toBeFalsy();
 
   input.element.value = '2';
   input.trigger('input');
   expect(input.element.value).toEqual('2');
-  expect(wrapper.emitted('input')[0][0]).toEqual('2');
+  expect(wrapper.emitted('input')[1][0]).toEqual('2');
 });
 
 test('shoud watch value and format it', () => {
@@ -157,9 +157,33 @@ test('only allow interger', () => {
   expect(wrapper.emitted('input')[1][0]).toEqual(1);
 });
 
-test('stepper focus', () => {
-  const wrapper = mount(Stepper);
+test('input invalid value and blur', () => {
+  const wrapper = mount(Stepper, {
+    propsData: {
+      value: '',
+    },
+  });
+
   const input = wrapper.find('input');
+  input.element.value = '.';
+  input.trigger('input');
+  input.trigger('blur');
+
+  expect(wrapper.emitted('input').pop()).toEqual([1]);
+});
+
+test('stepper focus', () => {
+  const wrapper = mount(Stepper, {
+    propsData: {
+      disableInput: true,
+    },
+  });
+  const input = wrapper.find('input');
+
+  input.trigger('focus');
+  expect(wrapper.emitted('focus')).toBeFalsy();
+
+  wrapper.setProps({ disableInput: false });
   input.trigger('focus');
   expect(wrapper.emitted('focus')).toBeTruthy();
 });
@@ -172,16 +196,17 @@ test('stepper blur', () => {
     },
   });
 
-  wrapper.vm.$on('input', value => {
+  wrapper.vm.$on('input', (value) => {
     wrapper.setProps({ value });
   });
 
   const input = wrapper.find('input');
   input.element.value = '';
   input.trigger('input');
-  input.trigger('blur');
+  expect(wrapper.emitted('input')[0][0]).toEqual('');
 
-  expect(wrapper.emitted('input')[0][0]).toEqual(3);
+  input.trigger('blur');
+  expect(wrapper.emitted('input')[1][0]).toEqual(3);
   expect(wrapper.emitted('blur')).toBeTruthy();
 });
 

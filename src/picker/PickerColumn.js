@@ -191,26 +191,29 @@ export default createComponent({
       return option;
     },
 
-    setIndex(index, userAction) {
+    setIndex(index, emitChange) {
       index = this.adjustIndex(index) || 0;
-      this.offset = -index * this.itemHeight;
+
+      const offset = -index * this.itemHeight;
 
       const trigger = () => {
         if (index !== this.currentIndex) {
           this.currentIndex = index;
 
-          if (userAction) {
+          if (emitChange) {
             this.$emit('change', index);
           }
         }
       };
 
       // trigger the change event after transitionend when moving
-      if (this.moving) {
+      if (this.moving && offset !== this.offset) {
         this.transitionEndTrigger = trigger;
       } else {
         trigger();
       }
+
+      this.offset = offset;
     },
 
     setValue(value) {
@@ -233,7 +236,7 @@ export default createComponent({
     momentum(distance, duration) {
       const speed = Math.abs(distance / duration);
 
-      distance = this.offset + (speed / 0.002) * (distance < 0 ? -1 : 1);
+      distance = this.offset + (speed / 0.003) * (distance < 0 ? -1 : 1);
 
       const index = this.getIndexByOffset(distance);
 
@@ -267,7 +270,6 @@ export default createComponent({
             tabindex: disabled ? -1 : 0,
           },
           class: [
-            'van-ellipsis',
             bem('item', {
               disabled,
               selected: index === this.currentIndex,
@@ -280,13 +282,18 @@ export default createComponent({
           },
         };
 
-        if (this.allowHtml) {
-          data.domProps = {
-            innerHTML: text,
-          };
-        }
+        const childData = {
+          class: 'van-ellipsis',
+          domProps: {
+            [this.allowHtml ? 'innerHTML' : 'innerText']: text,
+          },
+        };
 
-        return <li {...data}>{this.allowHtml ? '' : text}</li>;
+        return (
+          <li {...data}>
+            <div {...childData} />
+          </li>
+        );
       });
     },
   },
@@ -296,7 +303,6 @@ export default createComponent({
       transform: `translate3d(0, ${this.offset + this.baseOffset}px, 0)`,
       transitionDuration: `${this.duration}ms`,
       transitionProperty: this.duration ? 'all' : 'none',
-      lineHeight: `${this.itemHeight}px`,
     };
 
     return (

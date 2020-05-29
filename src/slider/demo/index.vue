@@ -1,22 +1,22 @@
 <template>
   <demo-section>
-    <demo-block :title="$t('title1')">
+    <demo-block :title="t('title1')">
       <van-slider v-model="value1" @change="onChange" />
     </demo-block>
 
-    <demo-block :title="$t('title2')">
+    <demo-block :title="t('title2')">
       <van-slider v-model="value2" :min="-50" :max="50" @change="onChange" />
     </demo-block>
 
-    <demo-block :title="$t('title3')">
+    <demo-block :title="t('title3')">
       <van-slider v-model="value3" disabled />
     </demo-block>
 
-    <demo-block :title="$t('title4')">
+    <demo-block :title="t('title4')">
       <van-slider v-model="value4" :step="10" @change="onChange" />
     </demo-block>
 
-    <demo-block :title="$t('customStyle')">
+    <demo-block :title="t('customStyle')">
       <van-slider
         v-model="value5"
         bar-height="4px"
@@ -25,7 +25,7 @@
       />
     </demo-block>
 
-    <demo-block :title="$t('customButton')">
+    <demo-block :title="t('customButton')">
       <van-slider v-model="value6" active-color="#ee0a24">
         <template #button>
           <div class="custom-button">{{ value6 }}</div>
@@ -33,7 +33,7 @@
       </van-slider>
     </demo-block>
 
-    <demo-block v-if="!isWeapp" :title="$t('vertical')">
+    <demo-block v-if="!isWeapp" :title="t('vertical')">
       <div :style="{ height: '120px', paddingLeft: '30px' }">
         <van-slider v-model="value7" vertical @change="onChange" />
       </div>
@@ -45,7 +45,7 @@
 export default {
   i18n: {
     'zh-CN': {
-      title1: '基本用法',
+      title1: '基础用法',
       title2: '指定选择范围',
       title3: '禁用',
       title4: '指定步长',
@@ -80,7 +80,7 @@ export default {
 
   methods: {
     onChange(value) {
-      this.$toast(this.$t('text') + value);
+      this.$toast(this.t('text') + value);
     },
   },
 };
@@ -93,8 +93,12 @@ export default {
   background: @white;
   user-select: none;
 
-  .van-slider {
-    margin: 0 @padding-md @padding-xl;
+  .van-doc-demo-block {
+    padding: 0 @padding-md 20px;
+  }
+
+  .van-doc-demo-block__title {
+    padding-left: 0;
   }
 
   .custom-button {
@@ -105,10 +109,6 @@ export default {
     text-align: center;
     background-color: @red;
     border-radius: 100px;
-  }
-
-  .van-doc-demo-block__title {
-    padding-top: 25px;
   }
 }
 </style>

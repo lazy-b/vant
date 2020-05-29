@@ -27,7 +27,7 @@ const [createComponent, bem] = createNamespace('tabs');
 export default createComponent({
   mixins: [
     ParentMixin('vanTabs'),
-    BindEventMixin(function(bind) {
+    BindEventMixin(function (bind) {
       if (!this.scroller) {
         this.scroller = getScroller(this.$el);
       }
@@ -231,7 +231,7 @@ export default createComponent({
 
     // correct the index of active tab
     setCurrentIndexByName(name) {
-      const matched = this.children.filter(tab => tab.computedName === name);
+      const matched = this.children.filter((tab) => tab.computedName === name);
       const defaultIndex = (this.children[0] || {}).index || 0;
       this.setCurrentIndex(matched.length ? matched[0].index : defaultIndex);
     },
@@ -300,20 +300,22 @@ export default createComponent({
 
     scrollToCurrentContent() {
       if (this.scrollspy) {
-        this.clickedScroll = true;
-        const instance = this.children[this.currentIndex];
-        const el = instance && instance.$el;
+        const target = this.children[this.currentIndex];
+        const el = target?.$el;
+
         if (el) {
-          const to = Math.ceil(getElementTop(el)) - this.scrollOffset;
-          scrollTopTo(to, +this.duration, () => {
-            this.clickedScroll = false;
+          const to = getElementTop(el, this.scroller) - this.scrollOffset;
+
+          this.lockScroll = true;
+          scrollTopTo(this.scroller, to, +this.duration, () => {
+            this.lockScroll = false;
           });
         }
       }
     },
 
     onScroll() {
-      if (this.scrollspy && !this.clickedScroll) {
+      if (this.scrollspy && !this.lockScroll) {
         const index = this.getCurrentIndexOnScroll();
         this.setCurrentIndex(index);
       }
@@ -343,7 +345,7 @@ export default createComponent({
         refInFor
         type={type}
         dot={item.dot}
-        info={item.info}
+        info={isDef(item.badge) ? item.badge : item.info}
         title={item.title}
         color={this.color}
         style={item.titleStyle}

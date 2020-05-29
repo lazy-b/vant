@@ -1,6 +1,5 @@
 // Utils
-import { createNamespace } from '../utils';
-import { BORDER_TOP_BOTTOM } from '../utils/constant';
+import { createNamespace, isDef } from '../utils';
 import { getScroller } from '../utils/dom/scroll';
 
 // Mixins
@@ -49,12 +48,27 @@ export default createComponent({
     scroller() {
       return getScroller(this.$el);
     },
+
+    opened() {
+      return this.children.some((item) => item.showWrapper);
+    },
+
+    barStyle() {
+      if (this.opened && isDef(this.zIndex)) {
+        return {
+          zIndex: 1 + this.zIndex,
+        };
+      }
+    },
   },
 
   methods: {
     updateOffset() {
-      const { menu } = this.$refs;
-      const rect = menu.getBoundingClientRect();
+      if (!this.$refs.bar) {
+        return;
+      }
+
+      const rect = this.$refs.bar.getBoundingClientRect();
 
       if (this.direction === 'down') {
         this.offset = rect.bottom;
@@ -74,7 +88,7 @@ export default createComponent({
     },
 
     onClickOutside() {
-      this.children.forEach(item => {
+      this.children.forEach((item) => {
         item.toggle(false);
       });
     },
@@ -110,8 +124,14 @@ export default createComponent({
     ));
 
     return (
-      <div ref="menu" class={[bem(), BORDER_TOP_BOTTOM]}>
-        {Titles}
+      <div class={bem()}>
+        <div
+          ref="bar"
+          style={this.barStyle}
+          class={bem('bar', { opened: this.opened })}
+        >
+          {Titles}
+        </div>
         {this.slots('default')}
       </div>
     );

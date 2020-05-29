@@ -11,6 +11,7 @@ import { DatetimePicker } from './datetime-picker';
 import { Dialog } from './dialog';
 import { DropdownItem } from './dropdown-item';
 import { Field } from './field';
+import { Form } from './form';
 import { ImagePreview } from './image-preview';
 import { Lazyload } from './lazyload';
 import { List } from './list';
@@ -44,6 +45,7 @@ export class CouponCell extends VanComponent {}
 export class CouponList extends VanComponent {}
 export class Divider extends VanComponent {}
 export class DropdownMenu extends VanComponent {}
+export class Empty extends VanComponent {}
 export class Grid extends VanComponent {}
 export class GridItem extends VanComponent {}
 export class GoodsAction extends VanComponent {}
@@ -70,6 +72,7 @@ export class RadioGroup extends VanComponent {}
 export class Rate extends VanComponent {}
 export class Row extends VanComponent {}
 export class Search extends VanComponent {}
+export class ShareSheet extends VanComponent {}
 export class Sidebar extends VanComponent {}
 export class SidebarItem extends VanComponent {}
 export class Skeleton extends VanComponent {}
@@ -98,6 +101,7 @@ export {
   DatetimePicker,
   Dialog,
   DropdownItem,
+  Form,
   Field,
   ImagePreview,
   Lazyload,

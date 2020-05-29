@@ -30,12 +30,11 @@ function mockHTMLElementOffset() {
   });
 }
 
-function mockScrollIntoView() {
-  Element.prototype.scrollIntoView = function() {};
+export function mockScrollIntoView() {
+  const fn = jest.fn();
+  Element.prototype.scrollIntoView = fn;
+  return fn;
 }
-
-mockScrollIntoView();
-mockHTMLElementOffset();
 
 export function mockGetBoundingClientRect(
   rect: ClientRect | DOMRect
@@ -44,7 +43,7 @@ export function mockGetBoundingClientRect(
 
   Element.prototype.getBoundingClientRect = <any>jest.fn(() => rect);
 
-  return function() {
+  return function () {
     Element.prototype.getBoundingClientRect = originMethod;
   };
 }
@@ -53,3 +52,6 @@ export function mockScrollTop(value: number) {
   Object.defineProperty(window, 'scrollTop', { value, writable: true });
   trigger(window, 'scroll');
 }
+
+mockScrollIntoView();
+mockHTMLElementOffset();

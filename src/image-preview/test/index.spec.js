@@ -32,10 +32,48 @@ test('render image', async () => {
   expect(wrapper.emitted('input')).toBeFalsy();
   triggerDrag(swipe, 0, 0);
 
-  await later(300);
+  await later(250);
 
   expect(wrapper.emitted('input')[0][0]).toBeFalsy();
   expect(wrapper.emitted('change')[0][0]).toEqual(2);
+});
+
+test('closeable prop', () => {
+  const wrapper = mount(ImagePreviewVue, {
+    propsData: {
+      images,
+      value: true,
+      closeable: true,
+    },
+  });
+
+  wrapper.find('.van-image-preview__close-icon').trigger('click');
+  expect(wrapper.emitted('input')[0][0]).toEqual(false);
+});
+
+test('close-icon prop', () => {
+  const wrapper = mount(ImagePreviewVue, {
+    propsData: {
+      value: true,
+      closeable: true,
+      closeIcon: 'close',
+    },
+  });
+
+  expect(wrapper).toMatchSnapshot();
+});
+
+test('close-icon-position prop', () => {
+  const wrapper = mount(ImagePreviewVue, {
+    propsData: {
+      value: true,
+      closeable: true,
+      closeIcon: 'close',
+      closeIconPosition: 'top-left',
+    },
+  });
+
+  expect(wrapper).toMatchSnapshot();
 });
 
 test('async close prop', async () => {
@@ -56,7 +94,7 @@ test('async close prop', async () => {
 
   // should not emit input or close event when tapped
   triggerDrag(swipe, 0, 0);
-  await later(300);
+  await later(250);
   expect(wrapper.emitted('input')).toBeFalsy();
   expect(wrapper.emitted('close')).toBeFalsy();
 
@@ -65,7 +103,7 @@ test('async close prop', async () => {
   expect(wrapper.emitted('close')[0]).toBeTruthy();
 });
 
-test('function call', done => {
+test('function call', (done) => {
   ImagePreview(images);
   ImagePreview(images.slice(0, 1));
   Vue.nextTick(() => {
@@ -78,9 +116,10 @@ test('function call', done => {
   });
 });
 
-test('double click', async done => {
+test('double click', async (done) => {
   const instance = ImagePreview(images);
 
+  await later();
   const swipe = instance.$el.querySelector('.van-swipe__track');
   triggerDrag(swipe, 0, 0);
   triggerDrag(swipe, 0, 0);
@@ -111,7 +150,7 @@ test('onClose option', () => {
   });
 });
 
-test('onChange option', async done => {
+test('onChange option', async (done) => {
   const instance = ImagePreview({
     images,
     startPostion: 0,
@@ -123,6 +162,26 @@ test('onChange option', async done => {
 
   const swipe = instance.$el.querySelector('.van-swipe__track');
   triggerDrag(swipe, 1000, 0);
+});
+
+test('onScale option', async (done) => {
+  const { getBoundingClientRect } = Element.prototype;
+  Element.prototype.getBoundingClientRect = jest.fn(() => ({ width: 100 }));
+
+  const instance = ImagePreview({
+    images,
+    startPosition: 0,
+    onScale({ index, scale }) {
+      expect(index).toEqual(2);
+      expect(scale <= 2).toBeTruthy();
+      done();
+    },
+  });
+
+  await later();
+  const image = instance.$el.querySelector('img');
+  triggerZoom(image, 300, 300);
+  Element.prototype.getBoundingClientRect = getBoundingClientRect;
 });
 
 test('register component', () => {
@@ -138,10 +197,12 @@ test('zoom', async () => {
     propsData: { images, value: true },
   });
 
-  const image = wrapper.find('img');
+  await later();
+  const image = wrapper.find('.van-image');
   triggerZoom(image, 300, 300);
   triggerDrag(image, 300, 300);
-  expect(wrapper).toMatchSnapshot();
+
+  expect(image).toMatchSnapshot();
   Element.prototype.getBoundingClientRect = getBoundingClientRect;
 });
 
@@ -201,17 +262,6 @@ test('closeOnPopstate', () => {
   expect(wrapper.emitted('input')[1]).toBeFalsy();
 });
 
-test('lazy-load prop', () => {
-  const wrapper = mount(ImagePreviewVue, {
-    propsData: {
-      images,
-      lazyLoad: true,
-    },
-  });
-
-  wrapper.setProps({
-    value: true,
-  });
-
-  expect(wrapper).toMatchSnapshot();
+test('ImagePreview.Component', () => {
+  expect(ImagePreview.Component).toEqual(ImagePreviewVue);
 });
